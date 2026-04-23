@@ -1,17 +1,43 @@
-# Track B: Low-Energy Nuclear (LENR) Simulations
+Grandfather Legacy: Track B Mining Guide
+Welcome to the simulation layer of the Grandfather Legacy subnet. Your goal is to utilize computational physics to optimize hydrogen loading kinetics within metal lattices.
 
-## Overview
-Track B is dedicated to the computational modeling and simulation of hydrogen/metal lattice behaviors. The primary focus is investigating anomalous heat effects and potential low-energy nuclear transitions facilitated by phonon-driven interactions within crystalline structures.
+🎯 The Mission
+To earn rewards, you must find a material configuration that achieves a loading time of less than 2.2 seconds.
 
-## Research Objectives
-* **Lattice Dynamics:** Simulating the behavior of hydrogen and its isotopes (Deuterium/Tritium) within Palladium and Nickel lattices.
-* **Anomalous Heat Modeling:** Identifying geometric and thermodynamic triggers for excess heat generation.
-* **Phonon Coupling:** Exploring the role of coherent lattice vibrations in overcoming the Coulomb barrier at low energies.
+Current World Record: 2.13s
 
-## Technical Stack
-* **Python/NumPy:** For rapid prototyping of lattice geometry models.
-* **Molecular Dynamics:** (Optional) Integration with LAMMPS or custom MD scripts for particle trajectory analysis.
-* **Data Visualization:** Matplotlib/Mayavi for 3D lattice stress and occupancy mapping.
+Target Benchmark: 109.09 (9% improvement over baseline)
 
-## Usage
-Initial simulation scripts focus on hydrogen loading ratios and lattice expansion constants.
+🚀 Quick Start: How to Mine
+1. Environment Setup
+Ensure you have Python 3.x installed. Clone this repository and navigate to your working directory:
+
+Bash
+git clone https://github.com/rokon76/grandfather-legacy-track-b.git
+cd grandfather-legacy-track-b
+2. Run the Miner Template
+We provide a miner_template.py to get you started. This script simulates the physics engine and packages your results.
+
+Bash
+python miner_template.py
+This will generate a submission.json file in your local directory.
+
+3. Optimize Your Model
+The template uses a placeholder for the physics logic. To beat the record, you must modify the run_physics_model() function in miner_template.py with your own proprietary AI or simulation algorithms.
+
+4. Submit for Audit
+Once you have a competitive submission.json, it must be verified by the Track A Validator.
+
+Validation: Your submission is checked for physical consistency and compared against the global leaderboard.
+
+Rewards: Successful breakthroughs trigger a weight boost in the incentive mechanism.
+
+📊 Technical Specifications
+Primary Material Focus: Pd-H (Palladium-Hydrogen) and Ni-H (Nickel-Hydrogen).
+
+Key Metric: Loading time (seconds) to reach saturation.
+
+Incentive Structure: Linear weight scaling for every 1% improvement over the 2.2s benchmark.
+
+💡 Pro-Tip for Miners
+Focus on lattice geometry and phonon coupling. The most efficient simulations often involve non-standard crystalline structures that reduce the activation energy for hydrogen migration.

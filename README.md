@@ -1,4 +1,5 @@
 Grandfather Legacy: Track B Mining Guide
+
 Welcome to the simulation layer of the Grandfather Legacy subnet. Your goal is to utilize computational physics to optimize hydrogen loading kinetics within metal lattices.
 
 🎯 The Mission

@@ -57,4 +57,23 @@ def main():
     ratios = np.linspace(0.0, 1.0, 100)
     a_vals = [calculate_lattice_expansion(r) for r in ratios]
     ax1.plot(ratios, a_vals, color='#2c3e50', linewidth=2)
-    ax1.axvspan(0.6, 1.0, color='red', alpha=0.1, label='
+    ax1.axvspan(0.6, 1.0, color='red', alpha=0.1, label='Critical Beta-Phase')
+    ax1.set_title('Physical Expansion vs. Loading')
+    ax1.set_xlabel('Loading Ratio (H/Pd)')
+    ax1.set_ylabel('Lattice Constant (Å)')
+    ax1.grid(True, alpha=0.3)
+    ax1.legend()
+
+    # Plot 2: Temperature Sensitivity (Log Scale)
+    ax2.bar([f"{t}°C" for t in test_temps], results_time, color=['#34495e', '#e67e22', '#c0392b'])
+    ax2.set_yscale('log')
+    ax2.set_title('Time to Saturation (Log Scale)')
+    ax2.set_ylabel('Hours')
+    ax2.grid(axis='y', linestyle='--', alpha=0.7)
+
+    plt.tight_layout()
+    print("\nSimulation complete. Displaying analysis charts...")
+    plt.show()
+
+if __name__ == "__main__":
+    main()

@@ -1,34 +1,50 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calculate_lattice_expansion(loading_ratio):
+def calculate_kinetics(temp_celsius, thickness_mm):
     """
-    Calculates the lattice constant (a) for a Palladium-Hydrogen system.
-    Pd starts as an FCC lattice with a_0 ≈ 3.89 Å.
+    Calculates the diffusion coefficient (D) and estimated saturation time.
+    D = D0 * exp(-Ea / (R * T))
     """
-    a_0 = 3.890 
-    expansion_coeff = 0.063
-    return a_0 * (1 + expansion_coeff * loading_ratio)
+    # Constants for H in Pd
+    D0 = 2.9e-7  # Pre-exponential factor (m^2/s)
+    Ea = 22200   # Activation energy (J/mol)
+    R = 8.314    # Gas constant (J/mol*K)
+    
+    T_kelvin = temp_celsius + 273.15
+    D = D0 * np.exp(-Ea / (R * T_kelvin))
+    
+    # Time to reach ~90% saturation (Approximation: t = L^2 / D)
+    # L is half-thickness for double-sided loading
+    L = (thickness_mm / 1000) / 2
+    time_seconds = (L**2) / D
+    return D, time_seconds / 3600  # Returns D and Time in Hours
 
 def main():
-    # Define a smoother range for a clean curve
+    temp = 25  # Room Temperature in Celsius
+    thickness = 1.0  # 1mm Pd sample
+    
+    D, time_hours = calculate_kinetics(temp, thickness)
+    
+    print(f"--- Kinetic Analysis ---")
+    print(f"Temperature: {temp}°C")
+    print(f"Sample Thickness: {thickness}mm")
+    print(f"Diffusion Coefficient: {D:.2e} m^2/s")
+    print(f"Est. Time to Saturation: {time_hours:.2f} hours")
+    
+    # Generate visualization for expansion as before
     ratios = np.linspace(0.0, 1.0, 100)
-    lattice_constants = [calculate_lattice_expansion(r) for r in ratios]
+    a_0 = 3.890
+    lattice_constants = [a_0 * (1 + 0.063 * r) for r in ratios]
     
-    # Create the visualization
     plt.figure(figsize=(10, 6))
-    plt.plot(ratios, lattice_constants, color='#2c3e50', linewidth=2, label='FCC Expansion')
-    
-    # Highlight the critical loading zone (Beta-phase)
-    plt.axvspan(0.6, 1.0, color='red', alpha=0.1, label='Critical Loading Zone (Beta)')
-    
-    plt.title('Pd-H Lattice Expansion vs. Loading Ratio', fontsize=14)
-    plt.xlabel('Loading Ratio (H/Pd)', fontsize=12)
-    plt.ylabel('Lattice Constant (Å)', fontsize=12)
-    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.plot(ratios, lattice_constants, color='#2c3e50', label='Lattice Expansion')
+    plt.axvspan(0.6, 1.0, color='red', alpha=0.1, label='Beta-Phase Target')
+    plt.title(f'Pd-H System: {time_hours:.1f}hr Loading Estimate at {temp}°C')
+    plt.xlabel('Loading Ratio (H/Pd)')
+    plt.ylabel('Lattice Constant (Å)')
     plt.legend()
-    
-    print("Simulation complete. Displaying expansion curve...")
+    plt.grid(True, alpha=0.3)
     plt.show()
 
 if __name__ == "__main__":

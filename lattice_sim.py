@@ -1,9 +1,41 @@
-def main():
-    thickness = 0.5  # Using a thinner 0.5mm sample for faster results
-    test_temps = [25, 100, 300]  # Celsius
+import numpy as np
+import matplotlib.pyplot as plt
+
+def calculate_lattice_expansion(loading_ratio):
+    """
+    Calculates the lattice constant (a) for a Palladium-Hydrogen system.
+    Pd starts as an FCC lattice with a_0 ≈ 3.89 Å.
+    """
+    a_0 = 3.890 
+    expansion_coeff = 0.063
+    return a_0 * (1 + expansion_coeff * loading_ratio)
+
+def calculate_kinetics(temp_celsius, thickness_mm):
+    """
+    Calculates the diffusion coefficient (D) and estimated saturation time.
+    Formula: D = D0 * exp(-Ea / (R * T))
+    """
+    D0 = 2.9e-7  # Pre-exponential factor (m^2/s)
+    Ea = 22200   # Activation energy (J/mol)
+    R = 8.314    # Gas constant (J/mol*K)
     
-    print(f"{'Temp (°C)':<10} | {'Time to Saturation':<20}")
-    print("-" * 35)
+    T_kelvin = temp_celsius + 273.15
+    D = D0 * np.exp(-Ea / (R * T_kelvin))
+    
+    # Time to reach ~90% saturation (Approximation: t = L^2 / D)
+    # L is half-thickness for double-sided loading
+    L = (thickness_mm / 1000) / 2
+    time_seconds = (L**2) / D
+    return D, time_seconds / 3600  # Returns D and Time in Hours
+
+def main():
+    # --- CONFIGURATION ---
+    thickness = 0.5  # Sample thickness in mm
+    test_temps = [25, 100, 300]  # Temperatures to compare
+    
+    print(f"--- Pd-H Loading Analysis (Sample: {thickness}mm) ---")
+    print(f"{'Temp (°C)':<10} | {'Diffusion (m^2/s)':<20} | {'Est. Time'}")
+    print("-" * 55)
     
     results_time = []
     
@@ -11,19 +43,18 @@ def main():
         D, time_hours = calculate_kinetics(temp, thickness)
         results_time.append(time_hours)
         
-        # Format output: Use minutes if less than 1 hour
         if time_hours < 1:
-            time_str = f"{time_hours*60:.2f} minutes"
+            time_str = f"{time_hours*60:.2f} mins"
         else:
             time_str = f"{time_hours:.2f} hours"
             
-        print(f"{temp:<10} | {time_str:<20}")
+        print(f"{temp:<10} | {D:<20.2e} | {time_str}")
 
-    # Visualization of the Temperature Effect
-    plt.figure(figsize=(10, 6))
-    plt.bar([f"{t}°C" for t in test_temps], results_time, color=['#34495e', '#e67e22', '#c0392b'])
-    plt.ylabel('Time to Saturation (Hours)')
-    plt.title(f'Effect of Temperature on {thickness}mm Pd Sample Loading')
-    plt.yscale('log') # Log scale because the difference is massive
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
+    # --- VISUALIZATION ---
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+    # Plot 1: Lattice Expansion
+    ratios = np.linspace(0.0, 1.0, 100)
+    a_vals = [calculate_lattice_expansion(r) for r in ratios]
+    ax1.plot(ratios, a_vals, color='#2c3e50', linewidth=2)
+    ax1.axvspan(0.6, 1.0, color='red', alpha=0.1, label='

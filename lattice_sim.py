@@ -1,51 +1,29 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
-def calculate_kinetics(temp_celsius, thickness_mm):
-    """
-    Calculates the diffusion coefficient (D) and estimated saturation time.
-    D = D0 * exp(-Ea / (R * T))
-    """
-    # Constants for H in Pd
-    D0 = 2.9e-7  # Pre-exponential factor (m^2/s)
-    Ea = 22200   # Activation energy (J/mol)
-    R = 8.314    # Gas constant (J/mol*K)
-    
-    T_kelvin = temp_celsius + 273.15
-    D = D0 * np.exp(-Ea / (R * T_kelvin))
-    
-    # Time to reach ~90% saturation (Approximation: t = L^2 / D)
-    # L is half-thickness for double-sided loading
-    L = (thickness_mm / 1000) / 2
-    time_seconds = (L**2) / D
-    return D, time_seconds / 3600  # Returns D and Time in Hours
-
 def main():
-    temp = 25  # Room Temperature in Celsius
-    thickness = 1.0  # 1mm Pd sample
+    thickness = 0.5  # Using a thinner 0.5mm sample for faster results
+    test_temps = [25, 100, 300]  # Celsius
     
-    D, time_hours = calculate_kinetics(temp, thickness)
+    print(f"{'Temp (°C)':<10} | {'Time to Saturation':<20}")
+    print("-" * 35)
     
-    print(f"--- Kinetic Analysis ---")
-    print(f"Temperature: {temp}°C")
-    print(f"Sample Thickness: {thickness}mm")
-    print(f"Diffusion Coefficient: {D:.2e} m^2/s")
-    print(f"Est. Time to Saturation: {time_hours:.2f} hours")
+    results_time = []
     
-    # Generate visualization for expansion as before
-    ratios = np.linspace(0.0, 1.0, 100)
-    a_0 = 3.890
-    lattice_constants = [a_0 * (1 + 0.063 * r) for r in ratios]
-    
-    plt.figure(figsize=(10, 6))
-    plt.plot(ratios, lattice_constants, color='#2c3e50', label='Lattice Expansion')
-    plt.axvspan(0.6, 1.0, color='red', alpha=0.1, label='Beta-Phase Target')
-    plt.title(f'Pd-H System: {time_hours:.1f}hr Loading Estimate at {temp}°C')
-    plt.xlabel('Loading Ratio (H/Pd)')
-    plt.ylabel('Lattice Constant (Å)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.show()
+    for temp in test_temps:
+        D, time_hours = calculate_kinetics(temp, thickness)
+        results_time.append(time_hours)
+        
+        # Format output: Use minutes if less than 1 hour
+        if time_hours < 1:
+            time_str = f"{time_hours*60:.2f} minutes"
+        else:
+            time_str = f"{time_hours:.2f} hours"
+            
+        print(f"{temp:<10} | {time_str:<20}")
 
-if __name__ == "__main__":
-    main()
+    # Visualization of the Temperature Effect
+    plt.figure(figsize=(10, 6))
+    plt.bar([f"{t}°C" for t in test_temps], results_time, color=['#34495e', '#e67e22', '#c0392b'])
+    plt.ylabel('Time to Saturation (Hours)')
+    plt.title(f'Effect of Temperature on {thickness}mm Pd Sample Loading')
+    plt.yscale('log') # Log scale because the difference is massive
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()

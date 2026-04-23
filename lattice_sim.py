@@ -1,31 +1,35 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def calculate_lattice_expansion(loading_ratio):
     """
     Calculates the lattice constant (a) for a Palladium-Hydrogen system.
     Pd starts as an FCC lattice with a_0 ≈ 3.89 Å.
-    As H is loaded, the lattice expands.
     """
-    # Initial lattice constant for pure Palladium in Angstroms
     a_0 = 3.890 
-    
-    # Empirical expansion coefficient for Pd-H systems
-    # Roughly: a = a_0 * (1 + 0.063 * loading_ratio)
     expansion_coeff = 0.063
-    
-    current_a = a_0 * (1 + expansion_coeff * loading_ratio)
-    return current_a
+    return a_0 * (1 + expansion_coeff * loading_ratio)
 
 def main():
-    # Define loading ratios (H/Pd) from 0.0 to 1.0
-    ratios = np.linspace(0.0, 1.0, 11)
+    # Define a smoother range for a clean curve
+    ratios = np.linspace(0.0, 1.0, 100)
+    lattice_constants = [calculate_lattice_expansion(r) for r in ratios]
     
-    print(f"{'Loading Ratio (H/Pd)':<20} | {'Lattice Constant (Å)':<20}")
-    print("-" * 45)
+    # Create the visualization
+    plt.figure(figsize=(10, 6))
+    plt.plot(ratios, lattice_constants, color='#2c3e50', linewidth=2, label='FCC Expansion')
     
-    for r in ratios:
-        a_n = calculate_lattice_expansion(r)
-        print(f"{r:<20.1f} | {a_n:<20.4f}")
+    # Highlight the critical loading zone (Beta-phase)
+    plt.axvspan(0.6, 1.0, color='red', alpha=0.1, label='Critical Loading Zone (Beta)')
+    
+    plt.title('Pd-H Lattice Expansion vs. Loading Ratio', fontsize=14)
+    plt.xlabel('Loading Ratio (H/Pd)', fontsize=12)
+    plt.ylabel('Lattice Constant (Å)', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.legend()
+    
+    print("Simulation complete. Displaying expansion curve...")
+    plt.show()
 
 if __name__ == "__main__":
     main()

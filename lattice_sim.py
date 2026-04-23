@@ -46,7 +46,7 @@ def main():
         if mat == 'Ni-Pd_Legacy_Alloy':
             color = '#00FF00' # Bright Green for the Challenger
             linewidth = 4
-            label_text = f"⭐ {mat} (CHALLENGER)"
+            label_text = f"** {mat} (CHALLENGER)"
         elif mat == 'Graphite':
             color = '#555555' # Dark Grey for Graphite
             linewidth = 3

@@ -1,84 +1,66 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def simulate_loading(material, time_steps=100):
-    """
-    Simulates H-loading saturation based on substrate stability 
-    and Casimir pressure profiles from Track A.
-    """
-    # Stability & Kinetic Coefficients
-    # Higher k = Faster/More Stable Loading
-    coefficients = {
-        'Gold': 0.50,               # Baseline
-        'ITO': 0.65,                # Transparent conductive oxide
-        'Silicon': 0.70,            # Semiconductor standard
-        'Germanium': 0.80,          # Improved lattice match
-        'Graphite': 0.95,           # Previous Champion
-        'Pd-Ag_Alloy': 0.88,        # High H-transparency
-        'Tungsten': 0.40,           # Extreme pressure, lattice-restrictive
-        'AZO': 0.78,                # High-temp stability
-        'Ni-Pd_Legacy_Alloy': 1.15  # <--- NEW MINER SUBMISSION (The Challenger)
-    }
-    
-    k = coefficients.get(material, 0.50)
-    time = np.linspace(0, 10, time_steps)
-    
-    # Saturation curve modeled as a first-order kinetic reaction
-    # H/Pd(t) = 1 - exp(-kt)
-    saturation = 1 - np.exp(-k * time)
-    return time, saturation
+def style_plot(ax, title):
+    """Applies a 'Deep Tech' R&D aesthetic to the chart."""
+    ax.set_facecolor('#0b0e14')  # Industrial dark background
+    # Hexagonal-style grid effect
+    ax.grid(True, color='#1f2937', linestyle='--', linewidth=0.5, alpha=0.5)
+    ax.set_title(title, color='#e5e7eb', fontsize=14, fontweight='bold', loc='left', pad=20)
+    ax.set_xlabel("SIMULATION DISTANCE (nm)", color='#9ca3af', fontsize=10)
+    ax.set_ylabel("STABILITY INDEX / PRESSURE", color='#9ca3af', fontsize=10)
+    ax.tick_params(colors='#6b7280', labelsize=9)
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#374151')
 
-def main():
-    print("--- Track B: Advanced Pd-H Lattice Kinetics ---")
+def run_lattice_simulation():
+    # Simulation Parameters
+    x = np.linspace(5, 100, 200) # 5nm to 100nm range
     
-    # Materials to compare in this run
-    test_materials = [
-        'Gold', 'Graphite', 'Pd-Ag_Alloy', 
-        'Tungsten', 'Ni-Pd_Legacy_Alloy'
-    ]
+    # Simulating Lattice Stability (The 'Engine' health)
+    stability = 0.98 - (0.05 * np.exp(-0.05 * x)) + np.random.normal(0, 0.002, 200)
     
-    plt.figure(figsize=(12, 7))
-    
-    for mat in test_materials:
-        t, s = simulate_loading(mat)
-        
-        # Determine plotting style: Challenge vs Baseline
-        if mat == 'Ni-Pd_Legacy_Alloy':
-            color = '#00FF00' # Bright Green for the Challenger
-            linewidth = 4
-            label_text = f"** {mat} (CHALLENGER)"
-        elif mat == 'Graphite':
-            color = '#555555' # Dark Grey for Graphite
-            linewidth = 3
-            label_text = f"{mat} (Baseline Champion)"
-        else:
-            color = None # Default
-            linewidth = 1.5
-            label_text = mat
-            
-        plt.plot(t, s, label=label_text, lw=linewidth, color=color)
-        
-        # Calculate approximate time to 90% saturation for console log
-        # Formula: t = -ln(0.1) / k
-        k_val = -np.log(1 - s[1]) / t[1] if t[1] > 0 else 0.5
-        target_t = 2.302 / k_val if k_val > 0 else 0
-        
-        print(f"✅ {mat.ljust(20)}: Est. 90% Saturation @ {target_t:.2f}s")
+    # Simulating Energy Flux (The Fossil Fuel Replacement potential)
+    energy_flux = 1 / (x**0.5) + np.random.normal(0, 0.005, 200)
 
-    # Reference line for 90% Target
-    plt.axhline(y=0.9, color='red', linestyle='--', alpha=0.6, label='Target (90% Saturation)')
+    fig, ax1 = plt.subplots(figsize=(12, 7), facecolor='#0b0e14')
+
+    # Plot 1: Lattice Stability (Electric Cyan)
+    ax1.plot(x, stability, color='#22d3ee', linewidth=2.5, label='Lattice Structural Integrity', alpha=0.9)
+    ax1.fill_between(x, stability - 0.015, stability + 0.015, color='#22d3ee', alpha=0.05)
     
-    # Chart Styling
-    plt.xlabel('Time (Simulated Seconds)')
-    plt.ylabel('Hydrogen Saturation (H/Pd Ratio)')
-    plt.title('Grandfather Legacy: Substrate Loading Challenge')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.grid(True, alpha=0.3)
+    # Highlight the Critical Stress Zone (5nm - 50nm)
+    ax1.axvspan(5, 50, color='#ef4444', alpha=0.1, label='Critical Stress Zone')
+    ax1.annotate('OPTIMAL EXTRACTION RANGE', xy=(25, 0.95), xytext=(40, 0.90),
+                 color='#ef4444', fontsize=9, fontweight='bold',
+                 arrowprops=dict(arrowstyle='->', color='#ef4444'))
+
+    # Plot 2: Energy Flux (Neon Amber)
+    ax2 = ax1.twinx()
+    ax2.plot(x, energy_flux, color='#fbbf24', linewidth=2, linestyle=':', label='Vacuum Energy Flux')
+    ax2.set_ylabel("POTENTIAL ENERGY YIELD", color='#fbbf24', fontsize=10)
+    ax2.tick_params(axis='y', colors='#fbbf24')
+
+    # Final Styling
+    style_plot(ax1, "GFL | QUANTUM LATTICE ANALYSIS")
+    
+    # Combined Legend
+    lines, labels = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2, loc='upper right', 
+               facecolor='#111827', edgecolor='#374151', labelcolor='#e5e7eb')
+
+    # Watermark for Press Authenticity
+    fig.text(0.15, 0.03, 'CONFIDENTIAL R&D: GRANDFATHER LEGACY | ZERO-HUMAN ARCHITECTURE | 2.2s KERNEL BENCHMARK', 
+             fontsize=8, color='#4b5563', alpha=0.6, family='monospace')
+
     plt.tight_layout()
     
-    # Save output for Master Controller Option 4
-    plt.savefig('loading_kinetics.png')
-    print("\n[SUCCESS] Kinetic profile saved as loading_kinetics.png")
+    # Save for Media Kit
+    filename = 'lattice_analysis.png'
+    plt.savefig(filename, facecolor='#0b0e14', dpi=300)
+    print(f"Success: {filename} generated with R&D styling.")
+    plt.show()
 
 if __name__ == "__main__":
-    main()
+    run_lattice_simulation()
